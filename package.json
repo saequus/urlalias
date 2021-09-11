@@ -7,6 +7,7 @@
     "start": "NODE_ENV=develop nodemon ./app/app.js",
     "serve": "node ./app/app.js",
     "lint": "yarn lint:e && yarn lint:p",
+    "lint:fix": "yarn lint:e:fix && yarn lint:p:fix",
     "lint:e": "eslint --ext .tsx,.ts,.js .",
     "lint:p": "prettier --check '**/*.{js,ts,tsx}'",
     "lint:e:fix": "eslint --ext .tsx,.ts,.js --fix .",

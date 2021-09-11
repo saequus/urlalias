@@ -10,7 +10,7 @@ function redirectUsingAlias(req, res) {
       } else if (err) {
         throw err;
       } else {
-        'Short URL (or alias) not found.'
+        ('Short URL (or alias) not found.');
       }
     });
 }
@@ -31,15 +31,21 @@ function mainpage(req, res) {
 function getURLAlias(req, res) {
   const from = req.query.from;
   const to = req.query.to;
-  res.status(200).json({'status': 'created_new_alias', 'from': from, 'to': to});
+  res.status(200).json({ status: 'created_new_alias', from: from, to: to });
 }
 
 function createURLAlias(req, res) {
   const from = req.body.from;
   const to = req.body.to;
-  if (!from || !to) res.status(400).json({'status': 'error', 'error': 'required "from" and "to" params in request body'});
+  if (!from || !to)
+    res
+      .status(400)
+      .json({
+        status: 'error',
+        error: 'required "from" and "to" params in request body',
+      });
   createAliasInDB(from, to);
-  res.status(200).json({'status': 'ok', 'from': from, 'to': to});
+  res.status(200).json({ status: 'ok', from: from, to: to });
 }
 
 module.exports = {

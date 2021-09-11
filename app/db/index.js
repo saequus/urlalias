@@ -21,20 +21,21 @@ async function retrieveAliasesFromDB(limit) {
   if (!limit) limit = 100;
   const urlAliases = await URLAlias.find().limit(limit);
   cleaned = [];
-  urlAliases.forEach(u => cleaned.push({'from': u.from, 'to': u.to}))
+  urlAliases.forEach((u) => cleaned.push({ from: u.from, to: u.to }));
   return cleaned;
-};
+}
 
 async function createAliasInDB(from, to) {
   let newAlias = new URLAlias({ from: from, to: to });
   await newAlias.validate();
   newAlias.save((err) => {
-    if (err) return failedQueryActiion(`Failed to write to db with error: ${err}`);
+    if (err)
+      return failedQueryActiion(`Failed to write to db with error: ${err}`);
   });
-} 
+}
 
 module.exports = {
   retrieveAliasesFromDB,
   URLAlias,
-  createAliasInDB
+  createAliasInDB,
 };
