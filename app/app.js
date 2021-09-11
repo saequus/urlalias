@@ -1,19 +1,26 @@
+var config;
 if (process.env.NODE_ENV == 'develop') {
-  var config = require('./config/default');
+  config = require('./config/default');
 } else {
-  var config = require('./config/production');
+  config = require('./config/production');
 }
 
 const express = require('express');
 const app = express();
 const port = 3000;
 const mongoose = require('mongoose');
+
 const path = require('path');
 const indexRouter = require('./routes/index.js');
+const APIv1Router = require('./routes/api/v1.js');
+// const APIv2Router = require('./routes/index.js');
 
-mongoose.connect(config.NODE_ENV_MONGO_DB_PATH);
+mongoose.connect(config.MONGO_DB_PATH);
 
 // Configuration
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -36,6 +43,7 @@ app.get('/error/500', function (req, res, next) {
 });
 
 app.use('/', indexRouter);
+app.use('/api/v1/', APIv1Router);
 
 app.use(function (req, res, next) {
   res.status(404);
