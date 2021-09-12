@@ -1,8 +1,8 @@
-<%- include('components/headers/error_header') -%>
+<%- include('../components/headers/error_header') -%>
 <p>URL <%= error.url %></p>
 <% if (settings['verbose errors']) { %>
   <pre><%= error.stack %></pre>
 <% } else { %>
   <p>An error occurred! %></p>
 <% } %>
-<%- include('footer') -%>
+<%- include('../components/footer') -%>

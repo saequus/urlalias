@@ -13,7 +13,6 @@ const mongoose = require('mongoose');
 const path = require('path');
 const indexRouter = require('./routes/index.js');
 const APIv1Router = require('./routes/api/v1.js');
-// const APIv2Router = require('./routes/index.js');
 
 mongoose.connect(config.MONGO_DB_PATH);
 
@@ -50,7 +49,7 @@ app.use(function (req, res, next) {
 
   res.format({
     html: function () {
-      res.render('404', { url: req.url, statusCode: 404 });
+      res.render('errors/404', { url: req.url, statusCode: 404 });
     },
     json: function () {
       res.status(404).json({ error: 'Not found' });
@@ -70,7 +69,7 @@ app.use(function (err, req, res, next) {
   err.url = req.url;
   err.statusCode = statusCode;
   res.status(statusCode);
-  res.render('500', { error: err });
+  res.render('errors/500', { error: err });
 });
 
 app.listen(port, () => {

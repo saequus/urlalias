@@ -1,0 +1,32 @@
+<%- include('../components/headers/mainpage_header') -%>
+
+<div class='container'>
+
+  <div style='display: flex; justify-content: center; margin-top: 50px;'>
+    <div style='display: flex; flex-direction: column'>
+      <h1 style='text-transform: uppercase; text-align: center; color: #87c4e7'>Short URL</h1>
+
+      <div class='mainpage-card'>
+        <div><a href='/'><-- once again</a></div>
+        <div style='display: flex; flex-direction: column; padding: 20px 40px;'>
+
+          <div class='success-page-label'>Original URL</div>
+          <input class='success-page-link' id='sourceNode' value='<%= source %>' type='url'>
+          <div class='success-page-label'>Short URL</div>
+          <input class='success-page-link' id='slugNode' type='url'>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  (() => {
+    const slugNode = document.getElementById('slugNode');
+    slugNode.value = `${window.location.origin}/<%= slug %>`;
+  })();
+</script>
+<%- include('../components/footer') -%>
+
