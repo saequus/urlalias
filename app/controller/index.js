@@ -1,17 +1,25 @@
 const { URLAlias, createAliasInDB, retrieveAliasesFromDB } = require('../db');
+const { buildSlug } = require('../logic/alias');
 
-function redirectUsingAlias(req, res) {
+function redirectUsingSlug(req, res) {
+  if (!req.params.slug) {
+    res.status(404).json({ status: 'error', error: 'not found slug' });
+  }
+
   URLAlias.findOne()
-    .usingFrom(req.params.from)
+    .usingSlug(req.params.slug)
     .exec((err, alias) => {
-      if (alias) {
-        res.redirect(alias.to);
+      if (err) throw err;
+
+      if (alias && alias.source) {
+        res.redirect(alias.source);
         return Promise.resolve();
-      } else if (err) {
-        throw err;
-      } else {
-        ('Short URL (or alias) not found.');
       }
+
+      res
+        .status(404)
+        .json({ status: 'error', error: 'short URL (or alias) not found.' });
+      return;
     });
 }
 
@@ -29,40 +37,77 @@ function mainpage(req, res) {
 // REST API
 
 function getURLAlias(req, res) {
-  const from = req.query.from;
-  const to = req.query.to;
-  res.status(200).json({ status: 'created_new_alias', from: from, to: to });
+  const source = req.query.source;
+  const slug = req.query.slug;
+  res
+    .status(200)
+    .json({ status: 'created_new_alias', source: source, slug: slug });
 }
 
 function createURLAlias(req, res) {
-  console.log(res.body, res.json);
-  const from = req.body.from;
-  const to = req.body.to;
-  if (!from || !to)
+  const source = req.body.source;
+  const slug = req.body.slug;
+  if (!source || !slug) {
     res.status(400).json({
       status: 'error',
-      error: 'required from and to params in request body',
+      error: 'required source and slug params in request body',
     });
-  createAliasInDB(from, to);
-  res.status(200).json({ status: 'ok', from: from, to: to });
+    return;
+  }
+
+  URLAlias.findOne()
+    .usingSlug(slug)
+    .exec((err, alias) => {
+      if (err) throw err;
+      if (alias && alias.slug) {
+        res.status(400).json({
+          status: 'error',
+          error: 'short URL with this slug already exists',
+        });
+        return;
+      }
+    });
+
+  createAliasInDB(source, slug);
+
+  res.status(200).json({ status: 'ok', source: source, slug: slug });
+  return;
 }
 
-function createURLAliasBySource(req, res) {
-  const to = req.body.to;
-  if (!to)
+async function createURLAliasFromSource(req, res) {
+  let alias, slug;
+  const source = req.body.source;
+  if (!source) {
     res.status(400).json({
       status: 'error',
-      error: 'required from and to params in request body',
+      error: 'required source params in request body',
     });
-  const from = 'teast';
-  createAliasInDB(from, to);
-  res.status(200).json({ status: 'ok', from: from, to: to });
+    return;
+  }
+
+  try {
+    await URLAlias.findOne()
+      .usingSource(source)
+      .exec((err, alias) => {
+        if (err) throw err;
+
+        if (alias && alias.slug) {
+          res.render('success-page', { source: source, slug: alias.slug });
+        } else {
+          slug = buildSlug();
+          createAliasInDB(source, slug);
+          res.render('success-page', { source: source, slug: slug });
+        }
+      });
+  } catch (error) {
+    return next(error);
+  }
 }
 
 module.exports = {
-  redirectUsingAlias,
+  redirectUsingSlug,
   getAliases,
-  createURLAliasBySource,
+  createURLAliasFromSource,
   createURLAlias,
   mainpage,
 };

@@ -53,7 +53,7 @@ app.use(function (req, res, next) {
       res.render('404', { url: req.url, statusCode: 404 });
     },
     json: function () {
-      res.json({ error: 'Not found' });
+      res.status(404).json({ error: 'Not found' });
     },
     default: function () {
       res.type('txt').send('Not found');

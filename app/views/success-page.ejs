@@ -7,16 +7,26 @@
     <div style='display: flex; flex-direction: column'>
       <h1 style='text-transform: uppercase; text-align: center; color: #87c4e7'>Create short URL</h1>
 
+      
+
       <div class='mainpage-card'>
-        <form action="/new" method="POST" class="">
+
+        <span>Original URL</span>
+        <a ><%= source %></a>
+        
+        <span>Short URL</span>
+        <a ><%= slug %></a>
+
+        <!-- <form action="/api/v1/url-by-source" method="POST" class="">
           <div>
             <label for="source">Source URL</label>
             <input type="url" name="source" id="source" required>
           </div>
           <div>
-            <input class='form-input-submit' type="submit" value="Create short URL">
+            <input class='form-input-submit' onclick="window.location.href = '/api'" type="submit" value="Create short URL">
           </div>
-        </form>
+        </form> -->
+
       </div>
 
     </div>

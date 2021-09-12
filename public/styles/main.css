@@ -48,8 +48,7 @@ textarea {
 input[type="text"]:focus,
 input[type="url"]:focus,
 input[type="password"]:focus,
-input[type="email"]:focus,
-input[type="search"]:focus {
+input[type="email"]:focus {
   background: white;
   border-radius: 30px;
   border-top: none;
@@ -86,7 +85,7 @@ select {
   width: 90%;
   border-radius: 30px;
   background: white;
-  border-width: 2px 2px 3px;
+  border-width: 1px;
   border-color: #4c4b4d;
 }
 
