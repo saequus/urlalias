@@ -1,0 +1,30 @@
+<%- include('components/headers/mainpage_header') -%>
+
+<div class='container'></div>
+
+
+  <div style='display: flex; justify-content: center; margin-top: 50px;'>
+    <div style='display: flex; flex-direction: column'>
+      <h1 style='text-transform: uppercase; text-align: center; color: #87c4e7'>Create short URL</h1>
+
+      <div class='mainpage-card'>
+        <form action="/api/v1/url-by-source" method="POST" class="">
+          <div>
+            <label for="to">Source URL</label>
+            <input type="url" name="to" id="to" required>
+          </div>
+          <div>
+            <input class='form-input-submit' type="submit" value="Create short URL">
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+  
+  
+
+  
+</div>
+<%- include('footer') -%>
+

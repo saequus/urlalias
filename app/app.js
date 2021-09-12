@@ -50,7 +50,7 @@ app.use(function (req, res, next) {
 
   res.format({
     html: function () {
-      res.render('404', { url: req.url });
+      res.render('404', { url: req.url, statusCode: 404 });
     },
     json: function () {
       res.json({ error: 'Not found' });
@@ -66,7 +66,10 @@ app.use(function (err, req, res, next) {
   // we may use properties of the error object
   // here and next(err) appropriately, or if
   // we possibly recovered from the error, simply next().
-  res.status(err.status || 500);
+  const statusCode = err.status || 500;
+  err.url = req.url;
+  err.statusCode = statusCode;
+  res.status(statusCode);
   res.render('500', { error: err });
 });
 

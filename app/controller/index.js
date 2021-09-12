@@ -23,7 +23,7 @@ async function getAliases(req, res) {
 // Views
 
 function mainpage(req, res) {
-  res.send('Mainpage');
+  res.render('mainpage');
 }
 
 // REST API
@@ -35,15 +35,26 @@ function getURLAlias(req, res) {
 }
 
 function createURLAlias(req, res) {
+  console.log(res.body, res.json);
   const from = req.body.from;
   const to = req.body.to;
   if (!from || !to)
-    res
-      .status(400)
-      .json({
-        status: 'error',
-        error: 'required "from" and "to" params in request body',
-      });
+    res.status(400).json({
+      status: 'error',
+      error: 'required from and to params in request body',
+    });
+  createAliasInDB(from, to);
+  res.status(200).json({ status: 'ok', from: from, to: to });
+}
+
+function createURLAliasBySource(req, res) {
+  const to = req.body.to;
+  if (!to)
+    res.status(400).json({
+      status: 'error',
+      error: 'required from and to params in request body',
+    });
+  const from = 'teast';
   createAliasInDB(from, to);
   res.status(200).json({ status: 'ok', from: from, to: to });
 }
@@ -51,6 +62,7 @@ function createURLAlias(req, res) {
 module.exports = {
   redirectUsingAlias,
   getAliases,
+  createURLAliasBySource,
   createURLAlias,
   mainpage,
 };
