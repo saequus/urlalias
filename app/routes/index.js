@@ -3,7 +3,6 @@ const router = express.Router();
 const statsMiddleware = require('../middleware/stats');
 const {
   mainpage,
-  newAlias,
   newAliasFromSource,
   redirectUsingSlug,
   showLatest,

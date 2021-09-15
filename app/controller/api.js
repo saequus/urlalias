@@ -1,4 +1,10 @@
-const { URLAlias, createAliasInDB, retrieveAliasesFromDB } = require('../db');
+const {
+  URLAlias,
+  createAliasInDB,
+  retrieveAliasesFromDB,
+  deleteAliasUsingSourceInDB,
+  deleteAliasUsingSlugInDB,
+} = require('../db');
 const { buildSlug } = require('../logic/alias');
 
 // REST API
@@ -38,7 +44,7 @@ function newAliasJSON(req, res) {
   return;
 }
 
-async function newAliasFromSourceJSON(req, res) {
+async function newAliasUsingSourceJSON(req, res) {
   let slug;
   const source = req.body.source;
   if (!source) {
@@ -56,11 +62,13 @@ async function newAliasFromSourceJSON(req, res) {
         if (err) throw err;
 
         if (alias && alias.slug) {
-          res.render('success-page', { source: source, slug: alias.slug });
+          res
+            .status(200)
+            .json({ status: 'already_existed', slug: alias.slug, source });
         } else {
           slug = buildSlug();
           createAliasInDB(source, slug);
-          res.render('success-page', { source: source, slug: slug });
+          res.status(201).json({ status: 'created', slug, source });
         }
       });
   } catch (error) {
@@ -68,8 +76,57 @@ async function newAliasFromSourceJSON(req, res) {
   }
 }
 
+async function deleteAliasJSON(req, res) {
+  const slug = req.body.slug;
+  const source = req.body.source;
+
+  try {
+    if (slug) {
+      await URLAlias.findOne()
+        .usingSlug(slug)
+        .exec((err, alias) => {
+          if (err) throw err;
+          if (alias) {
+            deleteAliasUsingSlugInDB(slug);
+            res.status(200).json({
+              status: 'deleted',
+              slug: alias.slug,
+              source: alias.source,
+            });
+          } else {
+            res.status(404).json({ status: 'not_found', slug: slug });
+          }
+        });
+    } else if (source) {
+      await URLAlias.findOne()
+        .usingSource(source)
+        .exec((err, alias) => {
+          if (err) throw err;
+          if (alias) {
+            deleteAliasUsingSourceInDB(slug);
+            res.status(200).json({
+              status: 'deleted',
+              slug: alias.slug,
+              source: alias.source,
+            });
+          } else {
+            res.status(404).json({ status: 'not found', source: source });
+          }
+        });
+    } else {
+      res.status(200).json({
+        status: 'error',
+        error: 'slug or source body params required',
+      });
+    }
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   getAliasesJSON,
-  newAliasFromSourceJSON,
+  newAliasUsingSourceJSON,
   newAliasJSON,
+  deleteAliasJSON,
 };

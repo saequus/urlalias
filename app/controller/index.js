@@ -1,4 +1,4 @@
-const { URLAlias, createAliasInDB, retrieveAliasesFromDB } = require('../db');
+const { URLAlias, createAliasInDB } = require('../db');
 const { buildSlug } = require('../logic/alias');
 
 function redirectUsingSlug(req, res) {
@@ -63,9 +63,8 @@ async function newAliasFromSource(req, res) {
   let slug;
   const source = req.body.source;
   if (!source) {
-    res.status(400).json({
-      status: 'error',
-      error: 'required source params in request body',
+    res.render('pages/error-page', {
+      message: 'error: required source params in request body',
     });
     return;
   }
