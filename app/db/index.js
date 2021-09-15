@@ -29,6 +29,26 @@ async function retrieveAliasesFromDB(limit) {
   return cleaned;
 }
 
+function updateAliasUsingSlugInDB(alias) {
+  URLAlias.updateOne(
+    { slug: alias.slug },
+    { source: alias.source },
+    function (err) {
+      if (err) return failedQueryAction(err);
+    }
+  );
+}
+
+function updateAliasUsingSourceInDB(alias) {
+  URLAlias.updateOne(
+    { source: alias.source },
+    { slug: alias.slug },
+    function (err) {
+      if (err) return failedQueryAction(err);
+    }
+  );
+}
+
 function deleteAliasUsingSourceInDB(source) {
   URLAlias.deleteOne({ source }, function (err) {
     if (err) return failedQueryAction(err);
@@ -51,9 +71,11 @@ async function createAliasInDB(source, slug) {
 }
 
 module.exports = {
-  retrieveAliasesFromDB,
   URLAlias,
+  retrieveAliasesFromDB,
   deleteAliasUsingSourceInDB,
   deleteAliasUsingSlugInDB,
   createAliasInDB,
+  updateAliasUsingSlugInDB,
+  updateAliasUsingSourceInDB,
 };

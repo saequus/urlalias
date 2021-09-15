@@ -4,12 +4,14 @@ const {
   retrieveAliasesFromDB,
   deleteAliasUsingSourceInDB,
   deleteAliasUsingSlugInDB,
+  updateAliasUsingSlugInDB,
+  updateAliasUsingSourceInDB,
 } = require('../db');
 const { buildSlug } = require('../logic/alias');
 
 // REST API
 
-async function getAliasesJSON(req, res) {
+async function retrieveAliasesJSON(req, res) {
   const aliases = await retrieveAliasesFromDB();
   res.status(200).json(aliases);
 }
@@ -94,7 +96,7 @@ async function deleteAliasJSON(req, res) {
               source: alias.source,
             });
           } else {
-            res.status(404).json({ status: 'not_found', slug: slug });
+            res.status(404).json({ status: 'not found', slug: slug });
           }
         });
     } else if (source) {
@@ -124,9 +126,68 @@ async function deleteAliasJSON(req, res) {
   }
 }
 
+async function updateAliasJSON(req, res) {
+  const slug = req.body.slug;
+  const source = req.body.source;
+  const using = req.body.using;
+
+  if (!['slug', 'source'].includes(using)) {
+    res.status(400).json({
+      status: 'error',
+      error: 'using parameter should be one of slug or source',
+    });
+    return;
+  }
+
+  try {
+    if (slug && using === 'slug') {
+      await URLAlias.findOne()
+        .usingSlug(slug)
+        .exec((err, alias) => {
+          if (err) throw err;
+          if (alias) {
+            updateAliasUsingSlugInDB({ source, slug });
+            res.status(200).json({
+              status: 'updated',
+              slug: slug,
+              source: source,
+            });
+          } else {
+            res.status(404).json({ status: 'not found', slug: slug });
+          }
+        });
+    } else if (source && using === 'source') {
+      await URLAlias.findOne()
+        .usingSource(source)
+        .exec((err, alias) => {
+          if (err) throw err;
+          if (alias) {
+            updateAliasUsingSourceInDB({ source, slug });
+            res.status(200).json({
+              status: 'updated',
+              slug: slug,
+              source: source,
+            });
+          } else {
+            res.status(404).json({ status: 'not found', slug: slug });
+          }
+        });
+    } else {
+      res.status(400).json({
+        status: 'error',
+        error:
+          'using parameter, and one of slug or source body parameters required',
+      });
+    }
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
-  getAliasesJSON,
+  retrieveAliasesJSON,
   newAliasUsingSourceJSON,
   newAliasJSON,
   deleteAliasJSON,
+  updateAliasJSON,
 };

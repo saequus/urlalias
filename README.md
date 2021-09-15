@@ -29,19 +29,34 @@ curl --location --request DELETE 'localhost:3000/api/v1/url' \
 --data-urlencode 'source=https://en.wikipedia.org'
 ~~~
 
+Updating URL is possible by slug or by source. Provide `source`, `slug` and `using` (one of strings: 'slug' or  'source') body parameters. The `using` parameter defines which parameter is used to filter URL and the not-using is the value to be saved to database. 
+~~~
+curl --location --request PUT 'localhost:3000/api/v1/url' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'source=https://en.wikipedia.org \
+--data-urlencode 'slug=myslug' \
+--data-urlencode 'using=source'
+
+
+curl --location --request PUT 'localhost:3000/api/v1/url' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'source=https://en.wikipedia.org \
+--data-urlencode 'slug=myslug' \
+--data-urlencode 'using=slug'
+~~~
+
 ## Done
 
 * MongoDB integration
 * Redirect by URL slug (short URL)
 * Docker
 * Linters and formatters
+* REST API
 
 
 ## ToDo
 
 * Documentation
-
-* REST API
 * Tests
 * Swagger
 * CI/CD (at least linter checkers)
