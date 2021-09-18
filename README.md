@@ -45,6 +45,14 @@ curl --location --request PUT 'localhost:3000/api/v1/url' \
 --data-urlencode 'using=slug'
 ~~~
 
+Retrieve single shorted URL objects [GET]
+
+~~~
+curl --location --request GET 'http://localhost:3000/api/v1/url?source=https://en.wikipedia.org';
+
+curl --location --request GET 'http://localhost:3000/api/v1/url?slug=wiki';
+~~~
+
 ## Done
 
 * MongoDB integration

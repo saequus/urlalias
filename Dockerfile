@@ -1,6 +1,8 @@
 FROM node:16
 
-ENV PORT=7000
+ENV PORT=3000
+
+EXPOSE 3000 7000 27017
 
 RUN set -xe \
   && export DEBIAN_FRONTEND=noninteractive \
@@ -23,8 +25,6 @@ RUN set -xe \
   && apt-get autoremove -qq ${BUILD_DEPS} \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV TERM=xterm
-
 WORKDIR /opt
 
 COPY package.json yarn.lock ./
@@ -33,8 +33,5 @@ RUN yarn install
 
 COPY app/ ./app
 
-ENV NODE_ENV_MONGODB_PATH=local
-
-
-CMD ["node", "/opt/app/app.js"]
+CMD ["yarn", "serve"]
 

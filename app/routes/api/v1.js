@@ -3,6 +3,7 @@ const router = express.Router();
 const statsMiddleware = require('../../middleware/stats');
 const {
   retrieveAliasesJSON,
+  retrieveAliasJSON,
   newAliasJSON,
   newAliasUsingSourceJSON,
   deleteAliasJSON,
@@ -10,6 +11,7 @@ const {
 } = require('../../controller/api');
 
 router.get('/urls', statsMiddleware('api_v1_urls_get'), retrieveAliasesJSON);
+router.get('/url', statsMiddleware('api_v1_url_get'), retrieveAliasJSON);
 router.post(
   '/url',
   statsMiddleware('api_v1_url_post'),

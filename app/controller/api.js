@@ -16,6 +16,54 @@ async function retrieveAliasesJSON(req, res) {
   res.status(200).json(aliases);
 }
 
+async function retrieveAliasJSON(req, res) {
+  const source = req.query.source;
+  const slug = req.query.slug;
+  if (!source && !slug) {
+    res.status(400).json({
+      status: 'error',
+      error: 'required source or slug params in request query',
+    });
+  }
+
+  if (source) {
+    try {
+      await URLAlias.findOne()
+        .usingSource(source)
+        .exec((err, alias) => {
+          if (err) throw err;
+
+          if (alias && alias.slug) {
+            res.status(200).json({ status: 'ok', slug: alias.slug, source });
+          } else {
+            res.status(404).json({ status: 'not found' });
+          }
+        });
+      return Promise.resolve();
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  try {
+    await URLAlias.findOne()
+      .usingSource(source)
+      .exec((err, alias) => {
+        if (err) throw err;
+
+        if (alias && alias.source) {
+          res
+            .status(200)
+            .json({ status: 'ok', slug: slug, source: alias.source });
+        } else {
+          res.status(404).json({ status: 'not found' });
+        }
+      });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 function newAliasJSON(req, res) {
   const source = req.body.source;
   const slug = req.body.slug;
@@ -66,7 +114,7 @@ async function newAliasUsingSourceJSON(req, res) {
         if (alias && alias.slug) {
           res
             .status(200)
-            .json({ status: 'already_existed', slug: alias.slug, source });
+            .json({ status: 'already exists', slug: alias.slug, source });
         } else {
           slug = buildSlug();
           createAliasInDB(source, slug);
@@ -186,6 +234,7 @@ async function updateAliasJSON(req, res) {
 
 module.exports = {
   retrieveAliasesJSON,
+  retrieveAliasJSON,
   newAliasUsingSourceJSON,
   newAliasJSON,
   deleteAliasJSON,
