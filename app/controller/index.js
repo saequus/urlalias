@@ -13,7 +13,7 @@ async function redirectUsingSlug(req, res) {
   const cachedData = cache.get(cacheKey);
 
   if (cachedData && cachedData.source) {
-    res.redirect(alias.source);
+    res.redirect(cachedData.source);
     return Promise.resolve();
   }
 
