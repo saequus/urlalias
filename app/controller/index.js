@@ -1,32 +1,44 @@
 const { URLAlias, createAliasInDB } = require('../db');
 const { buildSlug } = require('../logic/alias');
+const cache = require('../lib/cache');
+const config = require('../config/default');
 
-function redirectUsingSlug(req, res) {
+
+async function redirectUsingSlug(req, res) {
   if (!req.params.slug) {
     res.status(404).json({ status: 'error', error: 'not found slug' });
   }
 
-  URLAlias.findOne()
+  const cacheKey = `slug_${req.params.slug}`;
+  const cachedData = cache.get(cacheKey);
+
+  if (cachedData && cachedData.source) {
+    res.redirect(alias.source);
+    return Promise.resolve();
+  }
+
+  await URLAlias.findOne()
     .usingSlug(req.params.slug)
     .exec((err, alias) => {
       if (err) throw err;
 
       if (alias && alias.source) {
+        cache.set(cacheKey, alias, config.cacheTime.REDIRECT_USING_SLUG);
         res.redirect(alias.source);
         return Promise.resolve();
       }
 
       res
         .status(404)
-        .json({ status: 'error', error: 'short URL (or alias) not found.' });
+        .redirect('/')
       return;
     });
 }
 
 // Views
 
-function mainpage(req, res) {
-  res.render('pages/main');
+async function mainpage(req, res) {
+  await res.render('pages/main');
 }
 
 function newAlias(req, res) {
@@ -69,23 +81,19 @@ async function newAliasFromSource(req, res) {
     return;
   }
 
-  try {
-    await URLAlias.findOne()
-      .usingSource(source)
-      .exec((err, alias) => {
-        if (err) throw err;
+  await URLAlias.findOne()
+    .usingSource(source)
+    .exec((err, alias) => {
+      if (err) throw err;
 
-        if (alias && alias.slug) {
-          res.render('pages/success', { source: source, slug: alias.slug });
-        } else {
-          slug = buildSlug();
-          createAliasInDB(source, slug);
-          res.render('pages/success', { source: source, slug: slug });
-        }
-      });
-  } catch (error) {
-    return next(error);
-  }
+      if (alias && alias.slug) {
+        res.render('pages/success', { source: source, slug: alias.slug });
+      } else {
+        slug = buildSlug();
+        createAliasInDB(source, slug);
+        res.render('pages/success', { source: source, slug: slug });
+      }
+    });
 }
 
 async function showLatest(req, res) {

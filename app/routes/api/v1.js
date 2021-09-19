@@ -10,8 +10,19 @@ const {
   updateAliasJSON,
 } = require('../../controller/api');
 
-router.get('/urls', statsMiddleware('api_v1_urls_get'), retrieveAliasesJSON);
-router.get('/url', statsMiddleware('api_v1_url_get'), retrieveAliasJSON);
+router.get('/urls', statsMiddleware('api_v1_urls_get'), async (req, res, next) => {
+  async function run() {
+    await retrieveAliasesJSON(req, res);
+  }
+  run().catch(next);
+});
+router.get('/url', statsMiddleware('api_v1_url_post'),
+async (req, res, next) => {
+  async function run() {
+    await retrieveAliasJSON(req, res);
+  }
+  run().catch(next);
+});
 router.post(
   '/url',
   statsMiddleware('api_v1_url_post'),

@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
+
+const COLLECTION_NAME = 'urlaliases';
+
 const URLAliasSchema = new Schema({
   source: String, // full url
   slug: String, // short url
@@ -15,7 +18,7 @@ URLAliasSchema.query.usingSource = function (source) {
   return this.where({ source: new RegExp(source, 'i') });
 };
 
-const URLAlias = mongoose.model('urlaliases', URLAliasSchema);
+const URLAlias = mongoose.model(COLLECTION_NAME, URLAliasSchema);
 
 function failedQueryAction(err) {
   throw err;

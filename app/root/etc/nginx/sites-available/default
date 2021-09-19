@@ -1,0 +1,21 @@
+upstream mainserver {
+  keepalive 64;
+  server 127.0.0.1:3000 max_fails=0;
+}
+
+server {
+	listen 80 default_server;
+
+	server_name 3ckster.com www.3ckster.com;
+
+	location /static/ {
+		root /opt/urlalias/public;
+	}
+
+	location / {
+		# First attempt to serve request as file, then
+		# as directory, then fall back to displaying a 404.
+		# try_files $uri $uri/ =404;
+		proxy_pass http://localhost:3000;
+	}
+}

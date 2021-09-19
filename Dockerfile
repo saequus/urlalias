@@ -2,7 +2,7 @@ FROM node:16
 
 ENV PORT=3000
 
-EXPOSE 3000 7000 27017
+EXPOSE 27017
 
 RUN set -xe \
   && export DEBIAN_FRONTEND=noninteractive \
@@ -28,6 +28,7 @@ RUN set -xe \
 WORKDIR /opt
 
 COPY package.json yarn.lock ./
+COPY public ./public
 
 RUN yarn install
 

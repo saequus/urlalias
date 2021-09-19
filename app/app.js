@@ -1,10 +1,4 @@
-var config;
-if (process.env.NODE_ENV == 'develop') {
-  config = require('./config/default');
-} else {
-  config = require('./config/production');
-}
-
+const config = require('./config/default');
 const express = require('express');
 const app = express();
 const port = 3000;
@@ -23,7 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-app.use('/static', express.static(path.join(__dirname, '../public')));
+app.use('/static', express.static(path.join(__dirname, '../public/static')));
 
 // Routes
 

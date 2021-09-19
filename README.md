@@ -53,6 +53,9 @@ curl --location --request GET 'http://localhost:3000/api/v1/url?source=https://e
 curl --location --request GET 'http://localhost:3000/api/v1/url?slug=wiki';
 ~~~
 
+## Installation requirements
+
+* __MongoDB:__ development environment available by `mongodb://roler:roler@localhost/test` and collection name `urlaliases`.
 ## Done
 
 * MongoDB integration
